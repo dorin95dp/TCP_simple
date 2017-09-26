@@ -6,25 +6,26 @@ import java.net.*;
  **/
 
 class TCPClient {
-    public static void main(String argv[]) throws Exception {
-        String sentence = "";
-        String modifiedSentence = "";
-        Socket clientSocket = new Socket("localhost", 6789);
+    public static void main(String argv[]) {
+        String fromServer = "";
 
-        // read from user
-        BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
-        sentence = inFromUser.readLine();
+        boolean isStopped = false;
+        while (!isStopped) {
+            try {
+                Socket clientSocket = new Socket("localhost", 6789);
+                // client read from server
+                BufferedReader inFromServer = new BufferedReader(
+                        new InputStreamReader(clientSocket.getInputStream()));
+                fromServer = inFromServer.readLine();
 
-        // client send to server
-        DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
-        outToServer.writeBytes(sentence + '\n');
+                System.out.println("FROM SERVER: " + fromServer);
 
-        // client read from server
-        BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
-        modifiedSentence = inFromServer.readLine();
+                clientSocket.close();
+            } catch (IOException e) {
+                System.out.println("Connection stopped");
+                break;
+            }
 
-        System.out.println("FROM SERVER: " + modifiedSentence);
-
-        clientSocket.close();
+        }
     }
 }
